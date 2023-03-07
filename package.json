@@ -1,7 +1,11 @@
 {
 	"name": "genius-lyrics-api",
-	"version": "3.2.0",
-	"main": "index.js",
+	"version": "4.0.0",
+	"main": "lib/index.js",
+	"types": "lib/index.d.ts",
+	"files": [
+		"lib/**/*"
+	],
 	"author": {
 		"name": "Faisal Arshed",
 		"url": "https://github.com/farshed"
@@ -13,10 +17,6 @@
 		}
 	],
 	"license": "MIT",
-	"dependencies": {
-		"axios": "^0.27.2",
-		"cheerio-without-node-native": "0.20.2"
-	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/farshed/genius-lyrics-api.git"
@@ -24,11 +24,13 @@
 	"keywords": [
 		"genius",
 		"lyrics",
-		"album-art",
 		"scraper",
 		"genius-lyrics",
-		"genius-album-art",
 		"genius-api",
 		"lyrics-scraper"
-	]
+	],
+	"dependencies": {
+		"cheerio": "^1.0.0-rc.12",
+		"cross-fetch": "^3.1.5"
+	}
 }
