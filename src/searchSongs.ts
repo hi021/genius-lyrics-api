@@ -1,31 +1,28 @@
 import fetch from "cross-fetch";
-import { validateOptions, queryOptimize, API_SEARCH } from "./utils";
-import { SongApi, SongSearchOptions } from "./types.js";
+import { validateOptions, queryOptimize, API_SEARCH, SongApi, SongSearchOptions } from "./utils";
 
-//returns the result of a genius search query in an array or just the top result
+//return an array of results from a genius search query to be parsed by parseSongInfo()
 export async function searchSongs(options: SongSearchOptions) {
 	try {
 		validateOptions(options);
-		const { apiKey, query, optimizeQuery = true, topResultOnly = false } = options;
+		const { apiKey, query, optimizeQuery = false, maxResults = Infinity } = options;
 		const queryOptimized = optimizeQuery ? queryOptimize(query) : query;
 		const reqUrl = `${API_SEARCH}${encodeURIComponent(queryOptimized)}`;
 
-		const res = await fetch(reqUrl, {
+		const result = await fetch(reqUrl, {
 			method: "GET",
 			headers: {
 				Authorization: "Bearer " + apiKey
 			}
 		});
-		if (!res.ok) throw new Error(`API responded with ${res.status}:\n${res.statusText}`);
+		if (!result.ok) throw new Error(`Genius responded with ${result.status}:\n${result.statusText}`);
 
-		const resJson = await res.json();
-		if (!resJson?.response?.hits?.length) return null;
+		const resJson = await result.json();
+		if (!resJson?.response?.hits?.length) return null; //nothing found
 
-		//assuming the top result is a song
-		if (topResultOnly) return resJson.response.hits[0].result as SongApi;
-
+		const limit = Math.min(resJson.response.hits.length, maxResults);
 		const resParsed: Array<SongApi> = [];
-		for (let i = 0; i < resJson.response.hits.length; i++) {
+		for (let i = 0; i < limit; i++) {
 			if (resJson.response.hits[i].type !== "song") continue;
 			resParsed.push(resJson.response.hits[i].result);
 		}

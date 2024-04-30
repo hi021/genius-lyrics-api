@@ -1,7 +1,6 @@
-import { Song, SongApi } from "./types";
-import { extractLyrics } from "./utils";
+import { Song, SongApi, extractLyrics } from "./utils";
 
-//turns genius' api response into a Song object
+//turns Genius' API response into a Song object
 export async function parseSongInfo(song: SongApi, showLyrics?: boolean) {
 	const { title_with_featured, primary_artist, album, song_art_image_thumbnail_url, release_date_for_display, id, url, stats } = song;
 
@@ -9,7 +8,7 @@ export async function parseSongInfo(song: SongApi, showLyrics?: boolean) {
 		id,
 		artist: primary_artist?.name || song.artist_names,
 		title: title_with_featured || song.title,
-		albumName: album?.name,
+		albumName: album?.name ?? "",
 		releaseDate: release_date_for_display || song.release_date,
 		thumbnail: song_art_image_thumbnail_url || song.song_art_image_url,
 		url,

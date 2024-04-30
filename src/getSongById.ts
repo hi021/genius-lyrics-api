@@ -7,15 +7,15 @@ export async function getSongById(id: number | string, apiKey: string) {
 	if (!apiKey) throw new TypeError("No API key was provided");
 
 	try {
-		const res = await fetch(`${API_SONG}${encodeURIComponent(id)}`, {
+		const result = await fetch(`${API_SONG}${encodeURIComponent(id)}`, {
 			method: "GET",
 			headers: {
 				Authorization: "Bearer " + apiKey
 			}
 		});
-		const resJson = await res.json();
+		const resJson = await result.json();
 
-		return resJson?.response?.song ? parseSongInfo(resJson?.response?.song, true) : null;
+		return resJson?.response?.song ? parseSongInfo(resJson.response.song, true) : null;
 	} catch (e) {
 		throw e;
 	}
