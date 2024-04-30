@@ -1,11 +1,9 @@
 {
 	"name": "genius-lyrics-api",
-	"version": "4.0.0",
+	"version": "4.1.0",
 	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
-	"files": [
-		"lib/**/*"
-	],
+	"files": ["/lib"],
 	"author": {
 		"name": "Faisal Arshed",
 		"url": "https://github.com/farshed"
@@ -14,6 +12,10 @@
 		{
 			"name": "Garlicvideos",
 			"url": "https://github.com/Garlicvideos"
+		},
+		{
+			"name": "hi",
+			"url": "https://github.com/hi021"
 		}
 	],
 	"license": "MIT",
@@ -31,6 +33,9 @@
 	],
 	"dependencies": {
 		"cheerio": "^1.0.0-rc.12",
-		"cross-fetch": "^3.1.5"
+		"cross-fetch": "^3.1.8"
+	},
+	"devDependencies": {
+		"typescript": "^5.4.5"
 	}
 }
