@@ -1,6 +1,6 @@
 import { Song, SongApi, extractLyrics } from "./utils";
 
-//turns Genius' API response into a Song object
+// turns Genius' API response into a Song object
 export async function parseSongInfo(song: SongApi, showLyrics?: boolean) {
 	const { title_with_featured, primary_artist, album, song_art_image_thumbnail_url, release_date_for_display, id, url, stats } = song;
 

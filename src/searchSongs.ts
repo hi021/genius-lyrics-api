@@ -1,7 +1,7 @@
 import fetch from "cross-fetch";
 import { validateOptions, queryOptimize, API_SEARCH, SongApi, SongSearchOptions } from "./utils";
 
-//return an array of results from a genius search query to be parsed by parseSongInfo()
+// returns an array of results from a genius search query to be parsed by parseSongInfo()
 export async function searchSongs(options: SongSearchOptions) {
 	try {
 		validateOptions(options);
@@ -18,7 +18,7 @@ export async function searchSongs(options: SongSearchOptions) {
 		if (!result.ok) throw new Error(`Genius responded with ${result.status}:\n${result.statusText}`);
 
 		const resJson = await result.json();
-		if (!resJson?.response?.hits?.length) return null; //nothing found
+		if (!resJson?.response?.hits?.length) return null; // if nothing found
 
 		const limit = Math.min(resJson.response.hits.length, maxResults);
 		const resParsed: Array<SongApi> = [];
@@ -29,6 +29,7 @@ export async function searchSongs(options: SongSearchOptions) {
 
 		return resParsed;
 	} catch (e) {
-		throw e;
+        console.error(`Failed to fetch songs for "${options.query}":`, e);
+		return null;
 	}
 }

@@ -1,5 +1,5 @@
 import fetch from "cross-fetch";
-import * as cheerio from "cheerio";
+import { load } from "cheerio";
 
 export const API_SEARCH = "https://api.genius.com/search?q=";
 export const API_SONG = "https://api.genius.com/songs/";
@@ -9,7 +9,7 @@ export const validateOptions = (options: Options) => {
 	if (!options.query) throw new TypeError("No search query was provided");
 };
 
-//remove content between () and [], remove feat./ft. and flatten whitespace
+// removes feat./ft. and content between () and [], flattens whitespace (I don't use this)
 export const queryOptimize = (query: string) => {
 	return query
 		.toLowerCase()
@@ -20,34 +20,29 @@ export const queryOptimize = (query: string) => {
 		.trim();
 };
 
-//extract lyrics from the song's genius page (e.g. https://genius.com/Sia-chandelier-lyrics)
+// extracts lyrics from the song's genius page (e.g. https://genius.com/Sia-chandelier-lyrics)
 export async function extractLyrics(url: string) {
 	try {
 		const result = await fetch(url);
 		const resultTxt = await result.text();
-		const $ = cheerio.load(resultTxt);
+		const $ = load(resultTxt);
 
-		let lyrics = $('div[class="lyrics"]').text().trim();
-		if (!lyrics) {
-			lyrics = "";
+        let lyrics = "";
+        $("div[data-lyrics-container]").each((_, elem) => {
+            if(!elem) return false;
 
-			$('div[class^="Lyrics__Container"]').each((i, elem) => {
-				const node = $(elem);
+            const snippet = $(elem)
+              .html()
+              .replace(/<br\s*\/?>/g, "\n")
+              .replace(/<[^>]+>/g, "");
 
-				if (node && node.text().length) {
-					const snippet = node
-						.html()!
-						.replace(/<br>/g, "\n")
-						.replace(/<(?!\s*br\s*\/?)[^>]+>/gi, "");
-
-					lyrics += $("<textarea/>").html(snippet).text().trim() + "\n\n";
-				}
-			});
-		}
+            lyrics += snippet.trim() + "\n\n";
+          });
 
 		return lyrics ? lyrics.trim() : null;
 	} catch (e) {
-		throw e;
+        console.error(`Failed to scrape lyrics for ${url}:`, e);
+		return null;
 	}
 }
 
@@ -55,24 +50,24 @@ export async function extractLyrics(url: string) {
 //  TYPES
 /////
 export interface Options {
-	readonly apiKey: string; //Genius' API key (https://docs.genius.com)
-	query: string; //search query (artist & title)
-	optimizeQuery?: boolean; //whether to run optimizeQuery() (no clue if it actually helps :d)
+	readonly apiKey: string;        // Genius' API key (https://docs.genius.com)
+	query: string;                  // search query (usually artist + title)
+	optimizeQuery?: boolean;        // whether to run optimizeQuery() (no clue if it actually helps :d)
 }
 export type SongOptions = Options & { showLyrics?: boolean };
 export type SongSearchOptions = Options & { maxResults?: number /* defaults to Infinity */ };
 
-//song data as parsed in parseSongInfo()
+// song data as parsed in parseSongInfo()
 export interface Song {
 	id: number;
-	artist: string; //primary_artist.name OR artist_names if null
-	title: string; //title_with_featured
-	albumName: string; //album.name
-	url: string; //full URL to the song's genius page
-	releaseDate?: string; //release date, Month DD, YYYY format (e.g. August 13, 2020)
-	thumbnail?: string; //cover art image URL (song_art_image_thumbnail_url)
-	views?: number; //genius page views (stats.pageviews)
-	lyrics?: string;
+	artist: string;                 // primary_artist.name OR artist_names if null
+	title: string;                  // title_with_featured
+	albumName: string;              // album.name
+	url: string;                    // full URL to the song's genius page
+	releaseDate?: string;           // release date in Month DD, YYYY format (e.g. August 13, 2020)
+	thumbnail?: string;             // cover art image URL (song_art_image_thumbnail_url)
+	views?: number;                 // genius page views (stats.pageviews)
+	lyrics?: string;                // as extracted by extractLyrics() if showLyrics is true
 }
-//song data as received from Genius API that I didn't bother typing (https://docs.genius.com/#songs-h2)
+// song data as received from Genius API that I didn't bother typing (https://docs.genius.com/#songs-h2)
 export type SongApi = Record<string, any>;
