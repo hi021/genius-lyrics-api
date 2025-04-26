@@ -10,5 +10,5 @@ export default async function getLyrics(optionsOrUrl: string | Options) {
     // provided song artist and title - look up the song first
     validateOptions(optionsOrUrl);
     const result = await searchSongs({ ...optionsOrUrl, maxResults: 1 });
-    return result?.length ? extractLyrics(result[0].url) : null;
+    return result.length ? extractLyrics(result[0].url) : null;
 }

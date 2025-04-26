@@ -1,15 +1,19 @@
-import fetch from "cross-fetch";
-import { load } from "cheerio";
+import { CheerioAPI, load } from "cheerio";
 
 export const API_SEARCH = "https://api.genius.com/search?q=";
 export const API_SONG = "https://api.genius.com/songs/";
+const SNIPPET_SEPARATOR = "\n\n"
 
 export const validateOptions = (options: Options) => {
 	if (!options.apiKey) throw new TypeError("No API key was provided");
 	if (!options.query) throw new TypeError("No search query was provided");
 };
 
-// removes feat./ft. and content between () and [], flattens whitespace (I don't use this)
+/**
+ * Removes feat./ft. and content between () and [], flattens whitespace
+ *
+ * (I don't recommend using this)
+ */
 export const queryOptimize = (query: string) => {
 	return query
 		.toLowerCase()
@@ -20,7 +24,11 @@ export const queryOptimize = (query: string) => {
 		.trim();
 };
 
-// extracts lyrics from the song's genius page (e.g. https://genius.com/Sia-chandelier-lyrics)
+export const decodeHtmlEntities = ($: CheerioAPI, value = "") => $("<textarea/>").html(value).text();
+
+/**
+ * Extracts lyrics from the song's genius page (e.g. https://genius.com/Sia-chandelier-lyrics)
+ */
 export async function extractLyrics(url: string) {
 	try {
 		const result = await fetch(url);
@@ -28,31 +36,27 @@ export async function extractLyrics(url: string) {
 		const $ = load(resultTxt);
 
         let lyrics = "";
-        $("div[data-lyrics-container]").each((_, elem) => {
-            if(!elem) return false;
-
-            const snippet = $(elem)
-              .html()
-              .replace(/<br\s*\/?>/g, "\n")
-              .replace(/<[^>]+>/g, "");
-
-            lyrics += snippet.trim() + "\n\n";
-          });
+        const lyricsContainers = $("div[data-lyrics-container]")
+        lyricsContainers.children("[data-exclude-from-selection]").remove();
+        lyricsContainers.each((_, elem) => {
+            const snippet = decodeHtmlEntities($, $(elem).html()?.replace(/<br\s*\/?>/g, "\n")?.replace(/<[^>]+>/g, ""))
+            lyrics += snippet ? snippet.trim() + SNIPPET_SEPARATOR : '';
+        });
 
 		return lyrics ? lyrics.trim() : null;
 	} catch (e) {
-        console.error(`Failed to scrape lyrics for ${url}:`, e);
+        console.error(`Failed to scrape lyrics for "${url}":`, e);
 		return null;
 	}
 }
 
 /////
-//  TYPES
+//  TYPES (yes they should be in a separate file)
 /////
 export interface Options {
 	readonly apiKey: string;        // Genius' API key (https://docs.genius.com)
 	query: string;                  // search query (usually artist + title)
-	optimizeQuery?: boolean;        // whether to run optimizeQuery() (no clue if it actually helps :d)
+	optimizeQuery?: boolean;        // whether to run queryOptimize() (no clue if it actually helps :d)
 }
 export type SongOptions = Options & { showLyrics?: boolean };
 export type SongSearchOptions = Options & { maxResults?: number /* defaults to Infinity */ };

@@ -1,4 +1,3 @@
-import fetch from "cross-fetch";
 import { parseSongInfo } from "./parseSongInfo";
 import { API_SONG } from "./utils";
 
