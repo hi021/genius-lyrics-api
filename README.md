@@ -1,6 +1,8 @@
 # genius-lyrics-api 🎶🌈
 
-A little fork of a simple Genius API full of improvements and TypeScript typings.
+The little Genius API that could.
+
+A [fork](https://github.com/farshed/genius-lyrics-api) full of improvements and TypeScript typings.
 
 Recommended to use with Node v22+
 
@@ -299,3 +301,33 @@ Results for "one two three one two three drink":
   }
 ]
 ```
+
+Genius API response can be then converted into a less-detailed, more friendly object using `parseSongInfo`.
+
+If you're only interested in the lyrics, use `getLyrics` instead.
+
+## Setup
+
+1. Get a Genius API key [here](https://docs.genius.com),
+2. Clone the repository:
+
+```
+git clone https://github.com/hi021/genius-lyrics-api.git
+```
+3. Install the dependencies:
+
+```
+npm ci
+```
+```
+pnpm install
+```
+```
+yarn install
+```
+4. Transpile into executable JavaScript:
+
+```
+tsc
+```
+5. That's it! You can now use the project like a package.
