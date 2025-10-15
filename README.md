@@ -2,7 +2,7 @@
 
 The little Genius API that could.
 
-A [fork](https://github.com/farshed/genius-lyrics-api) full of improvements and TypeScript typings.
+A [fork](https://github.com/farshed/genius-lyrics-api) full of improvements with TypeScript typings.
 
 Recommended to use with Node v22+
 
@@ -306,6 +306,8 @@ Genius API response can be then converted into a less-detailed, more friendly ob
 
 If you're only interested in the lyrics, use `getLyrics` instead.
 
+A real-life usage example can be found [here](https://github.com/hi021/okbot/blob/48cb725e7bf4909f3ac5be9ea22a71d5d6a916b5/src/commands/Utility/lyrics.ts#L75).
+
 ## Setup
 
 1. Get a Genius API key [here](https://docs.genius.com),
@@ -313,8 +315,9 @@ If you're only interested in the lyrics, use `getLyrics` instead.
 
 ```
 git clone https://github.com/hi021/genius-lyrics-api.git
+cd genius-lyrics-api
 ```
-3. Install the dependencies:
+3. Install required dependencies using your package manager of choice:
 
 ```
 npm ci
@@ -330,4 +333,4 @@ yarn install
 ```
 tsc
 ```
-5. That's it! You can now use the project like a package.
+5. That's it! You can now use the project like any local package.
